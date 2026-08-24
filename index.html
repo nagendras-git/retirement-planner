@@ -126,7 +126,7 @@ body{margin:0;background:var(--bg);color:var(--text1);font-family:'Inter',sans-s
 .page.active{display:block}
 .subpage{display:none}
 .subpage.active{display:block}
-.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,13,16,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);height:calc(58px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);display:flex;align-items:flex-start;justify-content:center;padding-top:7px}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,13,16,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);height:calc(64px + env(safe-area-inset-bottom,0px));padding:7px 0 calc(env(safe-area-inset-bottom,0px) + 8px);display:flex;align-items:flex-end;justify-content:center}
 body.light-theme .tab-bar{background:rgba(255,255,255,.97)}
 .tab-bar-inner{width:100%;max-width:480px;display:flex;align-items:flex-start;justify-content:space-around}
 .tab-item{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-family:inherit;cursor:pointer;padding:4px 24px}
