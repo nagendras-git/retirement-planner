@@ -41,6 +41,7 @@ body{margin:0;background:var(--bg);color:var(--text1);font-family:'Inter',sans-s
 .card-title{display:flex;align-items:center;gap:9px;font-size:.92rem;font-weight:700;color:var(--text1);margin-bottom:2px}
 .card-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff}
 .card-icon svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rupee-glyph{color:#fff;font-family:Arial,sans-serif;font-size:1.05rem;font-weight:700;line-height:1}
 .card-sub{font-size:.74rem;color:var(--text3);margin-bottom:14px;line-height:1.4}
 
 .field{margin-bottom:14px}
@@ -109,6 +110,15 @@ body{margin:0;background:var(--bg);color:var(--text1);font-family:'Inter',sans-s
 .home-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:4px;margin-bottom:14px}
 .home-tab-btn{flex:1;border:none;background:transparent;color:var(--text3);font-family:inherit;font-size:.84rem;font-weight:700;padding:11px 0;border-radius:999px;cursor:pointer;transition:all 150ms}
 .home-tab-btn.on{background:var(--blue);color:#fff}
+.input-summary{background:var(--blue-bg);border:1px solid rgba(59,130,246,.35);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.input-summary-label{font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.input-summary-value{font-size:1rem;font-weight:800;color:var(--blue)}
+.input-summary-link{border:0;background:transparent;color:var(--blue);font:inherit;font-size:.72rem;font-weight:700;cursor:pointer;padding:6px 0;white-space:nowrap}
+.input-error{display:none;color:var(--red);font-size:.72rem;font-weight:600;line-height:1.35;margin-top:-6px}
+.input-error.show{display:block}
+.finput.invalid{border-color:var(--red);box-shadow:0 0 0 1px rgba(248,113,113,.15)}
+.planning-note{border-left:3px solid var(--amber);color:var(--text3);font-size:.7rem;line-height:1.45;margin:4px 0 14px;padding:8px 10px;background:var(--amber-bg);border-radius:0 var(--r) var(--r) 0}
+@media (max-width:480px){.top-header{padding:calc(env(safe-area-inset-top,8px) + 8px) 14px 9px}.hdr-eyebrow{margin-bottom:0}.hdr-title{font-size:1.15rem}}
 .page{display:none}
 .page.active{display:block}
 .subpage{display:none}
@@ -169,6 +179,14 @@ body{padding-bottom:76px}
 
   <div class="subpage active" id="subpage-inputs">
 
+  <div class="input-summary" aria-live="polite">
+    <div>
+      <div class="input-summary-label">Estimated retirement corpus</div>
+      <div class="input-summary-value mono" id="input-corpus-preview">₹0</div>
+    </div>
+    <button class="input-summary-link" type="button" onclick="switchSubPage('results')">View results →</button>
+  </div>
+
   <!-- YOUR TIMELINE -->
   <div class="card">
     <div class="card-title">
@@ -179,23 +197,24 @@ body{padding-bottom:76px}
     <div class="field-row">
       <div class="field">
         <div class="flabel"><span class="flabel-text">Current Age</span></div>
-        <div class="finput-wrap"><input class="finput" id="in-currentAge" type="number" inputmode="numeric" value="35"></div>
+        <div class="finput-wrap"><input class="finput" id="in-currentAge" type="number" min="1" inputmode="numeric" value="35" aria-describedby="timeline-error"></div>
       </div>
       <div class="field">
         <div class="flabel"><span class="flabel-text">Retirement Age</span></div>
-        <div class="finput-wrap"><input class="finput" id="in-retireAge" type="number" inputmode="numeric" value="60"></div>
+        <div class="finput-wrap"><input class="finput" id="in-retireAge" type="number" min="1" inputmode="numeric" value="60" aria-describedby="timeline-error"></div>
       </div>
     </div>
     <div class="field">
       <div class="flabel"><span class="flabel-text">Live Up To (life expectancy)</span></div>
-      <div class="finput-wrap"><input class="finput" id="in-lifeExp" type="number" inputmode="numeric" value="85"></div>
+      <div class="finput-wrap"><input class="finput" id="in-lifeExp" type="number" min="1" inputmode="numeric" value="85" aria-describedby="timeline-error"></div>
     </div>
+    <div class="input-error" id="timeline-error" role="alert"></div>
   </div>
 
   <!-- EXPENSES -->
   <div class="card">
     <div class="card-title">
-      <div class="card-icon" style="background:#EF4444"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      <div class="card-icon" style="background:#EF4444"><span class="rupee-glyph" aria-label="Indian rupee">₹</span></div>
       Expenses &amp; Inflation
     </div>
     <div class="card-sub">Your current monthly cost of living, excluding EMIs</div>
@@ -246,6 +265,8 @@ body{padding-bottom:76px}
       <div class="finput-wrap"><input class="finput has-suffix" id="in-preRate" type="number" inputmode="decimal" step="0.1" value="10"><span class="finput-suffix">% p.a.</span></div>
     </div>
   </div>
+
+  <div class="planning-note">This planner provides an educational estimate. Actual returns, inflation, taxes, and healthcare costs can vary—review your plan periodically or consult a qualified adviser.</div>
 
   </div>
 
@@ -364,7 +385,7 @@ body{padding-bottom:76px}
 <div class="container">
 
   <div class="ios-group">
-    <div class="ios-row" onclick="toggleAppearance()">
+    <div class="ios-row" onclick="toggleAppearance()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAppearance()}" role="button" tabindex="0" aria-expanded="false" aria-controls="appearance-body">
       <div class="ios-row-icon" style="background:#8B5CF6"><svg viewBox="0 0 24 24"><path d="M21 12.5A9 9 0 1111.5 3a7 7 0 009.5 9.5z"/></svg></div>
       <div class="ios-row-title">Appearance</div>
       <span class="assump-caret" id="appearance-caret"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
@@ -397,13 +418,16 @@ body{padding-bottom:76px}
   </div>
 
   <div class="ios-group">
-    <div class="ios-row" style="cursor:default;border-bottom:none">
+    <div class="ios-row" onclick="toggleDanger()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleDanger()}" role="button" tabindex="0" aria-expanded="false" aria-controls="danger-body">
       <div class="ios-row-icon" style="background:#EF4444"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></div>
       <div class="ios-row-title" style="color:var(--red)">Danger Zone</div>
+      <span class="assump-caret" id="danger-caret"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
     </div>
-    <div style="padding:0 14px 14px">
-      <div style="font-size:.78rem;color:var(--text3);line-height:1.5;margin-bottom:10px">Clears every number you've entered and resets this planner to its defaults.</div>
-      <button class="btn-ghost danger" style="width:100%" onclick="clearAllData()">Clear All Data</button>
+    <div class="assump-body" id="danger-body">
+      <div class="assump-body-inner" style="padding:0 14px 14px">
+        <div style="font-size:.78rem;color:var(--text3);line-height:1.5;margin-bottom:10px">Clears every number you've entered and resets this planner to its defaults.</div>
+        <button class="btn-ghost danger" style="width:100%" onclick="clearAllData()">Clear All Data</button>
+      </div>
     </div>
   </div>
 
@@ -482,6 +506,33 @@ function toggleAssumptions(){
 
 function num(id){ const v=parseFloat(document.getElementById('in-'+id).value); return isNaN(v)?0:v; }
 
+function validateTimeline(currentAge, retireAge, lifeExp){
+  const fields=['currentAge','retireAge','lifeExp'];
+  const error=document.getElementById('timeline-error');
+  let message='';
+  if(currentAge<1) message='Enter a valid current age.';
+  else if(retireAge<=currentAge) message='Retirement age must be later than your current age.';
+  else if(lifeExp<=retireAge) message='Life expectancy must be later than your retirement age.';
+
+  fields.forEach(id=>{
+    const input=document.getElementById('in-'+id);
+    input.classList.remove('invalid');
+    input.setCustomValidity('');
+  });
+  if(message){
+    const invalidId=currentAge<1 ? 'currentAge' : (retireAge<=currentAge ? 'retireAge' : 'lifeExp');
+    const input=document.getElementById('in-'+invalidId);
+    input.classList.add('invalid');
+    input.setCustomValidity(message);
+    error.textContent=message;
+    error.classList.add('show');
+    return false;
+  }
+  error.textContent='';
+  error.classList.remove('show');
+  return true;
+}
+
 function calculate(){
   const currentAge = num('currentAge');
   const retireAge = num('retireAge');
@@ -493,6 +544,11 @@ function calculate(){
   const existingInv = num('existingInv');
   const epfExpected = num('epfExpected');
   const preRate = num('preRate')/100;
+
+  if(!validateTimeline(currentAge, retireAge, lifeExp)){
+    document.getElementById('input-corpus-preview').textContent='—';
+    return;
+  }
 
   const yearsToRetire = Math.max(retireAge - currentAge, 0);
   const yearsInRetirement = Math.max(lifeExp - retireAge, 0);
@@ -517,6 +573,7 @@ function calculate(){
 
   // ---- Render results ----
   document.getElementById('out-corpus').textContent = fmt(corpusRequired);
+  document.getElementById('input-corpus-preview').textContent = fmt(corpusRequired);
   document.getElementById('out-corpus-note').textContent = `to fund your lifestyle from age ${retireAge} to ${lifeExp}`;
   document.getElementById('out-futureExp').textContent = fmt(futureMonthlyExp)+'/mo';
   document.getElementById('out-yearsLeft').textContent = yearsToRetire+' yrs';
@@ -596,16 +653,26 @@ function navigate(name){
 function toggleAppearance(){
   const body=document.getElementById('appearance-body');
   const caret=document.getElementById('appearance-caret');
-  body.classList.toggle('open');
-  caret.classList.toggle('open');
+  const row=body.previousElementSibling;
+  const isOpen=body.classList.toggle('open');
+  caret.classList.toggle('open',isOpen);
+  row.setAttribute('aria-expanded',String(isOpen));
 }
 
 function setSize(px){
-  document.documentElement.style.setProperty('--base', px+'px');
-  document.body.style.fontSize = px+'px';
+  document.documentElement.style.fontSize = px+'px';
   document.querySelectorAll('.sz-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById('sz'+px).classList.add('on');
   try{localStorage.setItem('retirement-planner-sz', px)}catch(e){}
+}
+
+function toggleDanger(){
+  const body=document.getElementById('danger-body');
+  const caret=document.getElementById('danger-caret');
+  const row=body.previousElementSibling;
+  const isOpen=body.classList.toggle('open');
+  caret.classList.toggle('open',isOpen);
+  row.setAttribute('aria-expanded',String(isOpen));
 }
 
 function clearAllData(){
