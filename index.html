@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0d0d10">
+<title>Retirement Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d10; --surface:#141417; --surface2:#1e1e25; --surface3:#26262f;
+  --border:#4a4a60; --border2:#383850;
+  --text1:#f4f4fa; --text2:#c8c8e0; --text3:#b0b0cc;
+  --blue:#3B82F6; --blue-bg:rgba(59,130,246,.1);
+  --green:#22c55e; --green-bg:rgba(34,197,94,.1);
+  --amber:#fbbf24; --amber-bg:rgba(251,191,36,.1);
+  --amber-banner-bg:rgba(251,191,36,.14); --amber-banner-border:rgba(251,191,36,.35);
+  --purple:#a78bfa; --purple-bg:rgba(167,139,250,.1);
+  --red:#f87171; --red-bg:rgba(248,113,113,.1);
+  --r:12px; --r-lg:16px; --r-xl:20px;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+body.light-theme{
+  --bg:#f4f4f7; --surface:#ffffff; --surface2:#f0f0f5; --surface3:#e7e7ee;
+  --border:#dcdce6; --border2:#e6e6ee;
+  --text1:#15151d; --text2:#45455a; --text3:#6c6c82;
+  --amber:#b45309; --amber-bg:rgba(180,83,9,.1);
+  --amber-banner-bg:rgba(180,83,9,.1); --amber-banner-border:rgba(180,83,9,.3);
+}
+body.light-theme .top-header{background:rgba(255,255,255,.96)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--text1);font-family:'Inter',sans-serif;font-size:16px;-webkit-font-smoothing:antialiased;padding-bottom:24px}
+.container{width:100%;max-width:480px;margin:0 auto;padding:10px 14px 14px}
+.top-header{position:sticky;top:0;z-index:80;background:rgba(13,13,16,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:calc(env(safe-area-inset-top,12px) + 10px) 16px 12px}
+.hdr-eyebrow{font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.hdr-title{font-size:1.3rem;font-weight:800;letter-spacing:-.3px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:16px;margin-bottom:12px}
+.card-title{display:flex;align-items:center;gap:9px;font-size:.92rem;font-weight:700;color:var(--text1);margin-bottom:2px}
+.card-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff}
+.card-icon svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card-sub{font-size:.74rem;color:var(--text3);margin-bottom:14px;line-height:1.4}
+
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field-row{display:flex;gap:10px}
+.field-row .field{flex:1}
+.flabel{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.flabel-text{font-size:.78rem;font-weight:600;color:var(--text2)}
+.flabel-hint{font-size:.66rem;color:var(--text3);margin-top:1px;line-height:1.3}
+.finput-wrap{position:relative;display:flex;align-items:center}
+.finput-prefix{position:absolute;left:12px;font-size:.9rem;color:var(--text3);font-weight:600;pointer-events:none}
+.finput{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text1);font-family:inherit;font-size:.92rem;font-weight:700;padding:11px 12px;outline:none;transition:border-color .15s}
+.finput.has-prefix{padding-left:28px}
+.finput.has-suffix{padding-right:32px}
+.finput:focus{border-color:var(--blue)}
+.finput-suffix{position:absolute;right:12px;font-size:.82rem;color:var(--text3);font-weight:600;pointer-events:none}
+.finput::-webkit-outer-spin-button,.finput::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.finput[type=number]{-moz-appearance:textfield}
+
+.divider{height:1px;background:var(--border2);margin:14px 0}
+
+/* RESULTS */
+.result-hero{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:var(--r-xl);padding:20px 18px;margin-bottom:12px;text-align:center}
+.result-hero-label{font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.result-hero-val{font-size:2.1rem;font-weight:800;letter-spacing:-1px;color:var(--blue);line-height:1.1}
+.result-hero-note{font-size:.72rem;color:var(--text3);margin-top:6px}
+
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px}
+.result-cell{background:var(--surface);padding:13px 14px}
+.result-cell-lbl{font-size:.66rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.result-cell-val{font-size:1.05rem;font-weight:800;letter-spacing:-.3px}
+
+.sip-banner{border-radius:var(--r-lg);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.sip-banner.needed{background:var(--amber-banner-bg);border:1px solid var(--amber-banner-border)}
+.sip-banner.covered{background:var(--green-bg);border:1px solid rgba(34,197,94,.25)}
+.sip-banner-icon{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sip-banner.needed .sip-banner-icon{background:rgba(251,191,36,.18);color:var(--amber)}
+.sip-banner.covered .sip-banner-icon{background:rgba(34,197,94,.18);color:var(--green)}
+.sip-banner-icon svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sip-banner-title{font-size:.86rem;font-weight:700;margin-bottom:1px}
+.sip-banner.needed .sip-banner-title{color:var(--amber)}
+.sip-banner.covered .sip-banner-title{color:var(--green)}
+.sip-banner-sub{font-size:.72rem;color:var(--text3)}
+
+/* BUCKETS */
+.bucket-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border2)}
+.bucket-row:last-child{border-bottom:none;padding-bottom:0}
+.bucket-dot{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;color:#fff}
+.bucket-info{flex:1;min-width:0}
+.bucket-name{font-size:.86rem;font-weight:700;color:var(--text1)}
+.bucket-desc{font-size:.7rem;color:var(--text3);margin-top:1px}
+.bucket-val{text-align:right;flex-shrink:0}
+.bucket-amt{font-size:.92rem;font-weight:800;letter-spacing:-.2px}
+.bucket-meta{font-size:.68rem;color:var(--text3);margin-top:1px;font-weight:600}
+
+.assump-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer;user-select:none}
+.assump-toggle-label{font-size:.76rem;font-weight:600;color:var(--text3)}
+.assump-caret{transition:transform .2s var(--ease);color:var(--text3)}
+.assump-caret.open{transform:rotate(180deg)}
+.assump-body{overflow:hidden;max-height:0;transition:max-height .25s var(--ease)}
+.assump-body.open{max-height:600px}
+.assump-body-inner{padding-top:6px}
+
+.footer-note{text-align:center;font-size:.66rem;color:var(--text3);padding:10px 0 0}
+
+.home-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:4px;margin-bottom:14px}
+.home-tab-btn{flex:1;border:none;background:transparent;color:var(--text3);font-family:inherit;font-size:.84rem;font-weight:700;padding:11px 0;border-radius:999px;cursor:pointer;transition:all 150ms}
+.home-tab-btn.on{background:var(--blue);color:#fff}
+.page{display:none}
+.page.active{display:block}
+.subpage{display:none}
+.subpage.active{display:block}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,13,16,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);height:calc(58px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);display:flex;align-items:flex-start;justify-content:center;padding-top:7px}
+body.light-theme .tab-bar{background:rgba(255,255,255,.97)}
+.tab-bar-inner{width:100%;max-width:480px;display:flex;align-items:flex-start;justify-content:space-around}
+.tab-item{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-family:inherit;cursor:pointer;padding:4px 24px}
+.tab-item.active{color:var(--blue)}
+.tab-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tab-label{font-size:.66rem;font-weight:700}
+body{padding-bottom:76px}
+
+.ios-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:16px}
+.ios-row{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border2)}
+.ios-group>.ios-row:last-child{border-bottom:none}
+.ios-row-icon{width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff}
+.ios-row-icon svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ios-row-title{flex:1;font-size:.9rem;font-weight:500;color:var(--text1)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px}
+.settings-lbl{font-size:.86rem;font-weight:600;color:var(--text1)}
+.settings-sub{font-size:.72rem;color:var(--text3);margin-top:1px}
+.size-btns{display:flex;gap:6px}
+.sz-btn{min-width:2.1rem;height:2.1rem;padding:0 .4rem;border:1px solid var(--border);border-radius:999px;background:var(--surface2);color:var(--text3);font-size:.72rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;font-family:'Inter',sans-serif;transition:all .12s}
+.sz-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-ghost{border:1.5px solid rgba(59,130,246,.35);border-radius:var(--r-lg);cursor:pointer;color:var(--blue);font-size:.86rem;font-weight:600;background:rgba(59,130,246,.04);padding:12px;transition:all 120ms}
+.btn-ghost.danger{border-color:rgba(248,113,113,.35);color:var(--red);background:rgba(248,113,113,.04)}
+
+.theme-toggle{width:44px;height:26px;border-radius:99px;border:1px solid var(--border);background:var(--surface2);position:relative;cursor:pointer;flex-shrink:0;padding:0;-webkit-appearance:none;transition:background .18s var(--ease),border-color .18s var(--ease)}
+.theme-toggle.on{background:#34c759;border-color:#34c759}
+.theme-toggle-knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .18s var(--ease)}
+.theme-toggle.on .theme-toggle-knob{transform:translateX(18px)}
+.hdr-row{display:flex;align-items:center;justify-content:space-between}
+
+/* number formatting helper spans */
+.mono{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<script>try{if(localStorage.getItem('retirement-planner-theme')==='light')document.body.classList.add('light-theme');}catch(e){}</script>
+
+<div class="top-header">
+  <div class="hdr-row">
+    <div>
+      <div class="hdr-eyebrow">Plan ahead</div>
+      <div class="hdr-title">Retirement Planner</div>
+    </div>
+  </div>
+</div>
+
+<div class="page active" id="page-plan">
+<div class="container">
+
+  <div class="home-tabs">
+    <button class="home-tab-btn on" id="tab-inputs" onclick="switchSubPage('inputs')">Inputs</button>
+    <button class="home-tab-btn" id="tab-results" onclick="switchSubPage('results')">Results</button>
+  </div>
+
+  <div class="subpage active" id="subpage-inputs">
+
+  <!-- YOUR TIMELINE -->
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon" style="background:#3B82F6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      Your Timeline
+    </div>
+    <div class="card-sub">Current age, when you plan to stop working, and how long to plan for</div>
+    <div class="field-row">
+      <div class="field">
+        <div class="flabel"><span class="flabel-text">Current Age</span></div>
+        <div class="finput-wrap"><input class="finput" id="in-currentAge" type="number" inputmode="numeric" value="35"></div>
+      </div>
+      <div class="field">
+        <div class="flabel"><span class="flabel-text">Retirement Age</span></div>
+        <div class="finput-wrap"><input class="finput" id="in-retireAge" type="number" inputmode="numeric" value="60"></div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="flabel"><span class="flabel-text">Live Up To (life expectancy)</span></div>
+      <div class="finput-wrap"><input class="finput" id="in-lifeExp" type="number" inputmode="numeric" value="85"></div>
+    </div>
+  </div>
+
+  <!-- EXPENSES -->
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon" style="background:#EF4444"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      Expenses &amp; Inflation
+    </div>
+    <div class="card-sub">Your current monthly cost of living, excluding EMIs</div>
+    <div class="field">
+      <div class="flabel"><span class="flabel-text">Monthly Expenses (excl. EMI)</span></div>
+      <div class="finput-wrap"><span class="finput-prefix">₹</span><input class="finput has-prefix" id="in-monthlyExp" type="number" inputmode="decimal" value="50000"></div>
+    </div>
+    <div class="field">
+      <div class="flabel"><span class="flabel-text">Inflation Rate</span><span class="flabel-hint">6% is a fair long-term expectation</span></div>
+      <div class="finput-wrap"><input class="finput has-suffix" id="in-inflation" type="number" inputmode="decimal" step="0.1" value="6"><span class="finput-suffix">% p.a.</span></div>
+    </div>
+  </div>
+
+  <!-- RETIREMENT ASSUMPTIONS -->
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon" style="background:#8B5CF6"><svg viewBox="0 0 24 24"><path d="M21 12.5A9 9 0 1111.5 3a7 7 0 009.5 9.5z"/></svg></div>
+      Retirement Assumptions
+    </div>
+    <div class="card-sub">How your corpus is expected to grow once you've stopped earning</div>
+    <div class="field">
+      <div class="flabel"><span class="flabel-text">Post-Retirement Rate of Return</span><span class="flabel-hint">The return above inflation once retired. Kept low (1-3%) since retirees shift to safer, lower-growth investments</span></div>
+      <div class="finput-wrap"><input class="finput has-suffix" id="in-postRate" type="number" inputmode="decimal" step="0.1" value="2"><span class="finput-suffix">% p.a.</span></div>
+    </div>
+    <div class="field">
+      <div class="flabel"><span class="flabel-text">Estate to Leave Behind</span><span class="flabel-hint">Optional. Amount you want left over for your family</span></div>
+      <div class="finput-wrap"><span class="finput-prefix">₹</span><input class="finput has-prefix" id="in-estate" type="number" inputmode="decimal" value="0"></div>
+    </div>
+  </div>
+
+  <!-- EXISTING SAVINGS -->
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon" style="background:#22C55E"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></div>
+      Existing Savings
+    </div>
+    <div class="card-sub">What's already working toward retirement, and expected employer benefits</div>
+    <div class="field">
+      <div class="flabel"><span class="flabel-text">Existing Investments (linked to retirement)</span></div>
+      <div class="finput-wrap"><span class="finput-prefix">₹</span><input class="finput has-prefix" id="in-existingInv" type="number" inputmode="decimal" value="1500000"></div>
+    </div>
+    <div class="field">
+      <div class="flabel"><span class="flabel-text">EPF, Gratuity, NPS Expected</span></div>
+      <div class="finput-wrap"><span class="finput-prefix">₹</span><input class="finput has-prefix" id="in-epfExpected" type="number" inputmode="decimal" value="5000000"></div>
+    </div>
+    <div class="field">
+      <div class="flabel"><span class="flabel-text">Rate of Return (pre-retirement)</span><span class="flabel-hint">Lower this to 8-9% if your holdings are mostly fixed-income</span></div>
+      <div class="finput-wrap"><input class="finput has-suffix" id="in-preRate" type="number" inputmode="decimal" step="0.1" value="10"><span class="finput-suffix">% p.a.</span></div>
+    </div>
+  </div>
+
+  </div>
+
+  <div class="subpage" id="subpage-results">
+
+  <!-- RESULTS -->
+  <div class="result-hero">
+    <div class="result-hero-label">Corpus Required at Retirement</div>
+    <div class="result-hero-val mono" id="out-corpus">₹0</div>
+    <div class="result-hero-note" id="out-corpus-note">to fund your lifestyle through retirement</div>
+  </div>
+
+  <div class="result-grid">
+    <div class="result-cell">
+      <div class="result-cell-lbl">Monthly Expense at Retirement</div>
+      <div class="result-cell-val mono" id="out-futureExp">₹0</div>
+    </div>
+    <div class="result-cell">
+      <div class="result-cell-lbl">Years to Retirement</div>
+      <div class="result-cell-val mono" id="out-yearsLeft">0 yrs</div>
+    </div>
+  </div>
+
+  <div id="sip-banner" class="sip-banner needed">
+    <div class="sip-banner-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+    <div>
+      <div class="sip-banner-title" id="sip-title">SIP Required: ₹0/mo</div>
+      <div class="sip-banner-sub" id="sip-sub">To close the gap between what you'll have and what you'll need</div>
+    </div>
+  </div>
+
+  <!-- BUCKET STRATEGY -->
+  <div class="card" style="margin-top:12px">
+    <div class="card-title">
+      <div class="card-icon" style="background:#3B82F6"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6v13a2 2 0 002 2h4a2 2 0 002-2V6M10 11v6M14 11v6M9 6l1-4h4l1 4"/></svg></div>
+      Bucket Strategy
+    </div>
+    <div class="card-sub">How your corpus gets split the day you retire</div>
+
+    <div class="bucket-row">
+      <div class="bucket-dot" style="background:#3B82F6">1</div>
+      <div class="bucket-info">
+        <div class="bucket-name">Bank / Arbitrage Fund</div>
+        <div class="bucket-desc" id="b1-desc">3 years of living expenses</div>
+      </div>
+      <div class="bucket-val">
+        <div class="bucket-amt mono" id="out-bucket1">₹0</div>
+      </div>
+    </div>
+
+    <div class="bucket-row">
+      <div class="bucket-dot" style="background:#F59E0B">2</div>
+      <div class="bucket-info">
+        <div class="bucket-name">Balanced Advantage Fund</div>
+        <div class="bucket-desc">Refills Bucket 1 as it depletes</div>
+      </div>
+      <div class="bucket-val">
+        <div class="bucket-amt mono" id="out-bucket2">₹0</div>
+        <div class="bucket-meta" id="out-bucket2-lasts">calculating…</div>
+      </div>
+    </div>
+
+    <div class="bucket-row">
+      <div class="bucket-dot" style="background:#22C55E">3</div>
+      <div class="bucket-info">
+        <div class="bucket-name">Core Equity (Untouched)</div>
+        <div class="bucket-desc" id="b3-desc">20% of corpus, left to grow</div>
+      </div>
+      <div class="bucket-val">
+        <div class="bucket-amt mono" id="out-bucket3">₹0</div>
+        <div class="bucket-meta" id="out-bucket3-becomes">calculating…</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="assump-toggle" onclick="toggleAssumptions()">
+      <span class="assump-toggle-label">Bucket assumptions</span>
+      <span class="assump-caret" id="assump-caret"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+    </div>
+    <div class="assump-body" id="assump-body">
+      <div class="assump-body-inner">
+        <div class="field-row">
+          <div class="field">
+            <div class="flabel"><span class="flabel-text">Bucket 1: Years of Expense</span></div>
+            <div class="finput-wrap"><input class="finput" id="in-b1years" type="number" inputmode="decimal" step="0.5" value="3"></div>
+          </div>
+          <div class="field">
+            <div class="flabel"><span class="flabel-text">Bucket 2: Return Rate</span></div>
+            <div class="finput-wrap"><input class="finput has-suffix" id="in-b2rate" type="number" inputmode="decimal" step="0.1" value="9"><span class="finput-suffix">%</span></div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <div class="flabel"><span class="flabel-text">Bucket 3: % of Corpus</span></div>
+            <div class="finput-wrap"><input class="finput has-suffix" id="in-b3pct" type="number" inputmode="decimal" value="20"><span class="finput-suffix">%</span></div>
+          </div>
+          <div class="field">
+            <div class="flabel"><span class="flabel-text">Bucket 3: Growth Rate</span></div>
+            <div class="finput-wrap"><input class="finput has-suffix" id="in-b3rate" type="number" inputmode="decimal" step="0.1" value="10"><span class="finput-suffix">%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">Data stored on your device only 🔒</div>
+
+  </div>
+
+</div>
+</div>
+
+<!-- ══ SETTINGS ══ -->
+<div class="page" id="page-settings">
+<div class="container">
+
+  <div class="ios-group">
+    <div class="ios-row" onclick="toggleAppearance()">
+      <div class="ios-row-icon" style="background:#8B5CF6"><svg viewBox="0 0 24 24"><path d="M21 12.5A9 9 0 1111.5 3a7 7 0 009.5 9.5z"/></svg></div>
+      <div class="ios-row-title">Appearance</div>
+      <span class="assump-caret" id="appearance-caret"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+    </div>
+    <div class="assump-body" id="appearance-body">
+      <div class="assump-body-inner">
+        <div class="settings-row">
+          <div>
+            <div class="settings-lbl">Dark mode</div>
+            <div class="settings-sub">On = dark, Off = light</div>
+          </div>
+          <button class="theme-toggle on" id="theme-toggle-btn" onclick="toggleTheme()" role="switch" aria-checked="true">
+            <span class="theme-toggle-knob"></span>
+          </button>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:8px">
+          <div>
+            <div class="settings-lbl">Text size</div>
+            <div class="settings-sub">Adjust to your comfort level</div>
+          </div>
+          <div class="size-btns">
+            <button class="sz-btn" id="sz14" onclick="setSize(14)">S</button>
+            <button class="sz-btn on" id="sz16" onclick="setSize(16)">M</button>
+            <button class="sz-btn" id="sz18" onclick="setSize(18)">L</button>
+            <button class="sz-btn" id="sz20" onclick="setSize(20)">XL</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ios-group">
+    <div class="ios-row" style="cursor:default;border-bottom:none">
+      <div class="ios-row-icon" style="background:#EF4444"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></div>
+      <div class="ios-row-title" style="color:var(--red)">Danger Zone</div>
+    </div>
+    <div style="padding:0 14px 14px">
+      <div style="font-size:.78rem;color:var(--text3);line-height:1.5;margin-bottom:10px">Clears every number you've entered and resets this planner to its defaults.</div>
+      <button class="btn-ghost danger" style="width:100%" onclick="clearAllData()">Clear All Data</button>
+    </div>
+  </div>
+
+  <div class="footer-note">Your data stays on your device only 🔒</div>
+
+</div>
+</div>
+
+<nav class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-item active" id="nav-plan" onclick="navigate('plan')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <div class="tab-label">Plan</div>
+    </button>
+    <button class="tab-item" id="nav-settings" onclick="navigate('settings')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <div class="tab-label">Settings</div>
+    </button>
+  </div>
+</nav>
+
+<script>
+const STORAGE_KEY = 'retirement-planner-v1';
+const ids = ['currentAge','retireAge','lifeExp','monthlyExp','inflation','postRate','estate','existingInv','epfExpected','preRate','b1years','b3pct','b2rate','b3rate'];
+
+function fmt(n){
+  n = Math.round(n||0);
+  const neg = n<0; n=Math.abs(n);
+  let s;
+  if(n>=10000000) s = '₹'+(n/10000000).toFixed(2).replace(/\.?0+$/,'')+'Cr';
+  else if(n>=100000) s = '₹'+(n/100000).toFixed(2).replace(/\.?0+$/,'')+'L';
+  else s = '₹'+n.toLocaleString('en-IN');
+  return neg? '-'+s : s;
+}
+function fmtFull(n){
+  n = Math.round(n||0);
+  return (n<0?'-₹':'₹')+Math.abs(n).toLocaleString('en-IN');
+}
+
+// Excel-compatible PMT: solves for payment given rate, nper, pv, fv, type
+function PMT(rate, nper, pv, fv, type){
+  if(rate===0) return -(pv+fv)/nper;
+  const pvif = Math.pow(1+rate, nper);
+  let pmt = (rate/(pvif-1)) * -(pv*pvif + fv);
+  if(type===1) pmt = pmt/(1+rate);
+  return pmt;
+}
+// Excel-compatible PV: present value of an annuity (+ terminal fv), type=1 for annuity due
+function PV(rate, nper, pmt, fv, type){
+  if(rate===0) return -(fv + pmt*nper);
+  const pvif = Math.pow(1+rate, nper);
+  const annuityFactor = ((pvif-1)/rate) * (type===1 ? (1+rate) : 1);
+  return -(fv + pmt*annuityFactor) / pvif;
+}
+
+function save(){
+  const data={};
+  ids.forEach(id=>{ const el=document.getElementById('in-'+id); if(el) data[id]=el.value; });
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    ids.forEach(id=>{ const el=document.getElementById('in-'+id); if(el && data[id]!==undefined) el.value=data[id]; });
+  }catch(e){}
+}
+
+function toggleAssumptions(){
+  const body=document.getElementById('assump-body');
+  const caret=document.getElementById('assump-caret');
+  const open = body.classList.toggle('open');
+  caret.classList.toggle('open', open);
+}
+
+function num(id){ const v=parseFloat(document.getElementById('in-'+id).value); return isNaN(v)?0:v; }
+
+function calculate(){
+  const currentAge = num('currentAge');
+  const retireAge = num('retireAge');
+  const lifeExp = num('lifeExp');
+  const monthlyExp = num('monthlyExp');
+  const inflation = num('inflation')/100;
+  const postRate = num('postRate')/100;
+  const estate = num('estate');
+  const existingInv = num('existingInv');
+  const epfExpected = num('epfExpected');
+  const preRate = num('preRate')/100;
+
+  const yearsToRetire = Math.max(retireAge - currentAge, 0);
+  const yearsInRetirement = Math.max(lifeExp - retireAge, 0);
+
+  // Post-retirement monthly expense, inflated to the day you retire
+  const futureMonthlyExp = monthlyExp * Math.pow(1+inflation, yearsToRetire);
+
+  // Corpus required: PV of a level monthly annuity (annuity due) for the retirement span,
+  // at the post-retirement rate of return, plus any estate goal discounted back to retirement day.
+  const monthsInRetirement = yearsInRetirement*12;
+  const corpusRequired = monthsInRetirement>0
+    ? -PV(postRate/12, monthsInRetirement, futureMonthlyExp, estate, 1)
+    : estate;
+
+  // SIP required — Excel PMT, matching the formula from the sheet:
+  // PMT(preRate/12, yearsToRetire*12, -existingInv, corpusRequired-epfExpected, 1)
+  const nperMonths = yearsToRetire*12;
+  let sipRequired = 0;
+  if(nperMonths>0){
+    sipRequired = PMT(preRate/12, nperMonths, -existingInv, corpusRequired-epfExpected, 1);
+  }
+
+  // ---- Render results ----
+  document.getElementById('out-corpus').textContent = fmt(corpusRequired);
+  document.getElementById('out-corpus-note').textContent = `to fund your lifestyle from age ${retireAge} to ${lifeExp}`;
+  document.getElementById('out-futureExp').textContent = fmt(futureMonthlyExp)+'/mo';
+  document.getElementById('out-yearsLeft').textContent = yearsToRetire+' yrs';
+
+  const banner = document.getElementById('sip-banner');
+  const sipTitle = document.getElementById('sip-title');
+  const sipSub = document.getElementById('sip-sub');
+  if(sipRequired < 0){
+    banner.className='sip-banner needed';
+    sipTitle.textContent = `SIP Required: ${fmtFull(Math.abs(sipRequired))}/mo`;
+    sipSub.textContent = `For ${yearsToRetire} years, until you retire at age ${retireAge}. On top of what you already hold`;
+  }else{
+    banner.className='sip-banner covered';
+    sipTitle.textContent = `You're on track. No extra SIP needed`;
+    sipSub.textContent = `Your existing investments + EPF are projected to cover your target corpus by age ${retireAge}`;
+  }
+
+  // ---- Bucket strategy ----
+  const b1years = num('b1years');
+  const b3pct = num('b3pct')/100;
+  const b2rate = num('b2rate')/100;
+  const b3rate = num('b3rate')/100;
+
+  const corpus = Math.max(corpusRequired, 0);
+  const bucket1 = futureMonthlyExp * 12 * b1years;
+  const bucket3 = corpus * b3pct;
+  const bucket2 = Math.max(corpus - bucket1 - bucket3, 0);
+
+  document.getElementById('b1-desc').textContent = `${b1years} years of living expenses`;
+  document.getElementById('b3-desc').textContent = `${Math.round(b3pct*100)}% of corpus, left to grow`;
+  document.getElementById('out-bucket1').textContent = fmt(bucket1);
+  document.getElementById('out-bucket2').textContent = fmt(bucket2);
+  document.getElementById('out-bucket3').textContent = fmt(bucket3);
+
+  // Bucket 2 runway: refills Bucket 1 each year as expenses escalate with inflation
+  let b1 = bucket1, b2 = bucket2, expense = futureMonthlyExp, months = 0;
+  const r1m = 0.04/12, r2m = b2rate/12;
+  while(months < 600 && (b1>0 || b2>0)){
+    b1 = b1*(1+r1m) - expense;
+    b2 = b2*(1+r2m);
+    months++;
+    if(months % 12 === 0){
+      const target = b1years*expense*12;
+      if(b1 < target && b2 > 0){
+        const need = target-b1;
+        const xfer = Math.min(need, b2);
+        b1 += xfer; b2 -= xfer;
+      }
+      expense *= (1+inflation);
+    }
+    if(b1<=0 && b2<=0) break;
+  }
+  document.getElementById('out-bucket2-lasts').textContent = `lasts ~${(months/12).toFixed(1)} yrs`;
+
+  // Bucket 3: left untouched, compounding for the full retirement span
+  const bucket3Future = bucket3 * Math.pow(1+b3rate, yearsInRetirement);
+  document.getElementById('out-bucket3-becomes').textContent = `Grows to ${fmt(bucket3Future)} by age ${lifeExp}`;
+
+  save();
+}
+
+function switchSubPage(name){
+  document.querySelectorAll('.subpage').forEach(p=>p.classList.remove('active'));
+  document.getElementById('subpage-'+name).classList.add('active');
+  document.querySelectorAll('#page-plan .home-tab-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+name).classList.add('on');
+}
+
+function navigate(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.tab-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nav-'+name).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function toggleAppearance(){
+  const body=document.getElementById('appearance-body');
+  const caret=document.getElementById('appearance-caret');
+  body.classList.toggle('open');
+  caret.classList.toggle('open');
+}
+
+function setSize(px){
+  document.documentElement.style.setProperty('--base', px+'px');
+  document.body.style.fontSize = px+'px';
+  document.querySelectorAll('.sz-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('sz'+px).classList.add('on');
+  try{localStorage.setItem('retirement-planner-sz', px)}catch(e){}
+}
+
+function clearAllData(){
+  if(!confirm('This will clear every number you\'ve entered and reset the planner to its defaults. This cannot be undone. Continue?')) return;
+  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  ids.forEach(id=>{
+    const el=document.getElementById('in-'+id);
+    if(el) el.value = el.defaultValue;
+  });
+  calculate();
+  navigate('plan');
+}
+
+function toggleTheme(){
+  const isDark=!document.body.classList.contains('light-theme');
+  applyTheme(isDark?'light':'dark');
+}
+function applyTheme(mode){
+  const btn=document.getElementById('theme-toggle-btn');
+  if(mode==='light'){
+    document.body.classList.add('light-theme');
+    if(btn){btn.classList.remove('on');btn.setAttribute('aria-checked','false');}
+  }else{
+    document.body.classList.remove('light-theme');
+    if(btn){btn.classList.add('on');btn.setAttribute('aria-checked','true');}
+  }
+  try{localStorage.setItem('retirement-planner-theme',mode)}catch(e){}
+}
+
+document.querySelectorAll('.finput').forEach(el=>{
+  el.addEventListener('input', calculate);
+});
+
+load();
+calculate();
+applyTheme(localStorage.getItem('retirement-planner-theme')==='light'?'light':'dark');
+(function(){try{const s=parseInt(localStorage.getItem('retirement-planner-sz'));if(s>=14&&s<=20)setSize(s);else setSize(16);}catch(e){setSize(16);}})();
+</script>
+</body>
+</html>
