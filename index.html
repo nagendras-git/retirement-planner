@@ -229,8 +229,8 @@ body.light-theme .tab-bar{background:rgba(255,255,255,.97)}
     </div>
     <div class="card-sub">How your corpus is expected to grow once you've stopped earning</div>
     <div class="field">
-      <div class="flabel"><span class="flabel-text">Post-Retirement Rate of Return</span><span class="flabel-hint">The return above inflation once retired. Kept low (1-3%) since retirees shift to safer, lower-growth investments</span></div>
-      <div class="finput-wrap"><input class="finput has-suffix" id="in-postRate" type="number" inputmode="decimal" step="0.1" value="2"><span class="finput-suffix">% p.a.</span></div>
+      <div class="flabel"><span class="flabel-text">Expected Post-Tax Return</span><span class="flabel-hint">Your fund's expected return, after tax, in real-world rupees. Don't subtract inflation separately, the app already grows your withdrawal each year on its own</span></div>
+      <div class="finput-wrap"><input class="finput has-suffix" id="in-postRate" type="number" inputmode="decimal" step="0.1" value="9"><span class="finput-suffix">% p.a.</span></div>
     </div>
     <div class="field">
       <div class="flabel"><span class="flabel-text">Estate to Leave Behind</span><span class="flabel-hint">Optional. Amount you want left over for your family</span></div>
@@ -493,6 +493,34 @@ function toggleAssumptions(){
 
 function num(id){ const v=parseFloat(document.getElementById('in-'+id).value); return isNaN(v)?0:v; }
 
+// Simulates a corpus being drawn down monthly (withdrawal at start of each month,
+// matching annuity-due convention), with the withdrawal itself rising by the
+// inflation rate every 12 months — i.e. prices keep climbing throughout retirement,
+// not just up to the day you retire. Returns the ending balance.
+function simulateRetirementBalance(startCorpus, monthlyExp, postRate, inflation, months){
+  let bal = startCorpus;
+  let expense = monthlyExp;
+  const rm = postRate/12;
+  for(let m=1; m<=months; m++){
+    bal = (bal - expense) * (1+rm);
+    if(m%12===0) expense *= (1+inflation);
+  }
+  return bal;
+}
+
+// Binary search for the exact starting corpus that lands at the estate target
+// (usually 0) after simulateRetirementBalance runs for the full retirement span.
+function solveRequiredCorpus(monthlyExp, postRate, inflation, months, estateTarget){
+  if(months<=0) return estateTarget;
+  let lo=0, hi=Math.max(monthlyExp*months*3, 1);
+  for(let i=0;i<60;i++){
+    const mid=(lo+hi)/2;
+    const end=simulateRetirementBalance(mid, monthlyExp, postRate, inflation, months);
+    if(end < estateTarget) lo=mid; else hi=mid;
+  }
+  return (lo+hi)/2;
+}
+
 function calculate(){
   const currentAge = num('currentAge');
   const retireAge = num('retireAge');
@@ -511,12 +539,13 @@ function calculate(){
   // Post-retirement monthly expense, inflated to the day you retire
   const futureMonthlyExp = monthlyExp * Math.pow(1+inflation, yearsToRetire);
 
-  // Corpus required: PV of a level monthly annuity (annuity due) for the retirement span,
-  // at the post-retirement rate of return, plus any estate goal discounted back to retirement day.
+  // Corpus required: the exact starting lump sum that, drawn down monthly at your
+  // POST-TAX post-retirement rate (nominal fund return minus the tax drag), funds
+  // a withdrawal that KEEPS RISING with inflation every year of retirement (not
+  // just up to retirement day), and lands at your estate goal by the end.
+  // Solved by simulation, not a flat-annuity formula.
   const monthsInRetirement = yearsInRetirement*12;
-  const corpusRequired = monthsInRetirement>0
-    ? -PV(postRate/12, monthsInRetirement, futureMonthlyExp, estate, 1)
-    : estate;
+  const corpusRequired = solveRequiredCorpus(futureMonthlyExp, postRate, inflation, monthsInRetirement, estate);
 
   // SIP required — Excel PMT, matching the formula from the sheet:
   // PMT(preRate/12, yearsToRetire*12, -existingInv, corpusRequired-epfExpected, 1)
