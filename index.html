@@ -176,7 +176,7 @@ body.light-theme .tab-bar{background:rgba(255,255,255,.97)}
 <div class="page active" id="page-plan">
 <div class="container">
 
-  <div class="home-tabs">
+  <div class="home-tabs" id="subpage-tabs">
     <button class="home-tab-btn on" id="tab-inputs" onclick="switchSubPage('inputs')">Inputs</button>
     <button class="home-tab-btn" id="tab-results" onclick="switchSubPage('results')">Results</button>
   </div>
@@ -621,7 +621,7 @@ function calculate(){
 function switchSubPage(name){
   document.querySelectorAll('.subpage').forEach(p=>p.classList.remove('active'));
   document.getElementById('subpage-'+name).classList.add('active');
-  document.querySelectorAll('#page-plan .home-tab-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('#subpage-tabs .home-tab-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById('tab-'+name).classList.add('on');
 }
 
