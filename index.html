@@ -43,6 +43,13 @@ body.light-theme{
   --amber-banner-bg:rgba(180,83,9,.1); --amber-banner-border:rgba(180,83,9,.3);
 }
 body.light-theme .top-header{background:rgba(255,255,255,.96)}
+body.dark-grey{
+  --bg:#1c1c1e;--surface:#2c2c2e;--surface2:#3a3a3c;--surface3:#48484a;
+  --border:#545456;--border2:#3a3a3c;
+  --text1:#f4f4fa;--text2:#c8c8e0;--text3:#98989f;
+}
+body.dark-grey .top-header{background:rgba(28,28,30,.96)}
+body.dark-grey .tab-bar{background:rgba(28,28,30,.97)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{height:100%;overflow-x:hidden;background:var(--bg)}
 html,body{height:100%;overflow-x:hidden}
@@ -170,7 +177,10 @@ body.light-theme .tab-bar{background:rgba(255,255,255,.97)}
 </style>
 </head>
 <body>
-<script>try{if(localStorage.getItem('retirement-planner-theme')==='light')document.body.classList.add('light-theme');}catch(e){}</script>
+<script>try{
+  if(localStorage.getItem('retirement-planner-theme')==='light'){document.body.classList.add('light-theme');}
+  else if(localStorage.getItem('retirement-planner-darkstyle')==='grey'){document.body.classList.add('dark-grey');}
+}catch(e){}</script>
 
 <div class="top-header">
   <div class="hdr-row">
@@ -398,6 +408,16 @@ body.light-theme .tab-bar{background:rgba(255,255,255,.97)}
           <button class="theme-toggle on" id="theme-toggle-btn" onclick="toggleTheme()" role="switch" aria-checked="true">
             <span class="theme-toggle-knob"></span>
           </button>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-lbl">Dark style</div>
+            <div class="settings-sub">Black is punchier, Grey is easier on the eyes</div>
+          </div>
+          <div class="size-btns">
+            <button class="sz-btn on" id="ds-black" onclick="setDarkStyle('black')">Black</button>
+            <button class="sz-btn" id="ds-grey" onclick="setDarkStyle('grey')">Grey</button>
+          </div>
         </div>
         <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:8px">
           <div>
@@ -691,12 +711,23 @@ function applyTheme(mode){
   const btn=document.getElementById('theme-toggle-btn');
   if(mode==='light'){
     document.body.classList.add('light-theme');
+    document.body.classList.remove('dark-grey');
     if(btn){btn.classList.remove('on');btn.setAttribute('aria-checked','false');}
   }else{
     document.body.classList.remove('light-theme');
+    let darkStyle='black';
+    try{darkStyle=localStorage.getItem('retirement-planner-darkstyle')||'black'}catch(e){}
+    document.body.classList.toggle('dark-grey', darkStyle==='grey');
     if(btn){btn.classList.add('on');btn.setAttribute('aria-checked','true');}
   }
   try{localStorage.setItem('retirement-planner-theme',mode)}catch(e){}
+}
+
+function setDarkStyle(style){
+  document.body.classList.toggle('dark-grey', style==='grey');
+  document.getElementById('ds-black').classList.toggle('on', style==='black');
+  document.getElementById('ds-grey').classList.toggle('on', style==='grey');
+  try{localStorage.setItem('retirement-planner-darkstyle', style)}catch(e){}
 }
 
 document.querySelectorAll('.finput').forEach(el=>{
@@ -706,6 +737,11 @@ document.querySelectorAll('.finput').forEach(el=>{
 load();
 calculate();
 applyTheme(localStorage.getItem('retirement-planner-theme')==='light'?'light':'dark');
+(function(){try{
+  const ds=localStorage.getItem('retirement-planner-darkstyle')||'black';
+  document.getElementById('ds-black').classList.toggle('on', ds==='black');
+  document.getElementById('ds-grey').classList.toggle('on', ds==='grey');
+}catch(e){}})();
 (function(){try{const s=parseInt(localStorage.getItem('retirement-planner-sz'));if(s>=14&&s<=20)setSize(s);else setSize(16);}catch(e){setSize(16);}})();
 </script>
 </body>
